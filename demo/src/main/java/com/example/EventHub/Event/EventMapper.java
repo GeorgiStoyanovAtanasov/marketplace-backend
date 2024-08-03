@@ -44,6 +44,7 @@ public class EventMapper {
         event.setEventType(eventTypeMapper.toEntity(eventDTO.getEventTypeDTO()));
         event.setEventStatus(eventDTO.getEventStatus());
         event.setUsers(eventDTO.getUsers().stream().map(userMapper::toEntity).collect(Collectors.toList()));
+        event.setEventPermission(eventDTO.getEventPermission());
 
         // Handle MultipartFile to byte[] conversion if file is present
         if (eventDTO.getFile() != null && !eventDTO.getFile().isEmpty()) {
@@ -72,7 +73,8 @@ public class EventMapper {
                 organisationMapper.toDTO(event.getOrganisation()),
                 eventTypeMapper.toDTO(event.getEventType()),
                 event.getEventStatus(),
-                event.getUsers().stream().map(userMapper::toDTO).collect(Collectors.toList())
+                event.getUsers().stream().map(userMapper::toDTO).collect(Collectors.toList()),
+                event.getEventPermission()
         );
     }
 }

@@ -1,5 +1,6 @@
 package com.example.EventHub.Event;
 
+import com.example.EventHub.EventPermission.EventPermission;
 import com.example.EventHub.EventStatus.EventStatus;
 import com.example.EventHub.EventType.EventType;
 import com.example.EventHub.EventType.EventTypeDTO;
@@ -54,6 +55,7 @@ public class EventDTO {
     private EventTypeDTO eventTypeDTO;
     private EventStatus eventStatus;
     private List<UserDTO> users;
+    private EventPermission eventPermission;
 
     public EventDTO() {
     }

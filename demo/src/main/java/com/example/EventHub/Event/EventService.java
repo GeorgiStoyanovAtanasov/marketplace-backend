@@ -1,6 +1,7 @@
 package com.example.EventHub.Event;
 
 import com.example.EventHub.EventApplication;
+import com.example.EventHub.EventPermission.EventPermission;
 import com.example.EventHub.EventStatus.EventStatus;
 import com.example.EventHub.EventType.EventType;
 import com.example.EventHub.EventType.EventTypeDTO;
@@ -91,7 +92,7 @@ public class EventService {
 
     public void delete(String name) {
         Event event = eventRepository.findByName(name);
-        if(event == null){
+        if (event == null) {
             throw new IllegalArgumentException("name cannot be null nigga");
         }
         eventRepository.delete(event);
@@ -102,7 +103,8 @@ public class EventService {
                                                              Integer type,
                                                              String date,
                                                              Double minPrice,
-                                                             Double maxPrice) {
+                                                             Double maxPrice,
+                                                             EventPermission eventPermission) {
 
         if (place == null) {
             place = "";
@@ -123,7 +125,7 @@ public class EventService {
             minPrice = maxPrice1;
         }
 
-        List<Event> events = eventRepository.findByPlaceTypeDateAndPrice(name, place, type, date, minPrice, maxPrice);
+        List<Event> events = eventRepository.findByPlaceTypeDateAndPrice(name, place, type, date, minPrice, maxPrice, eventPermission);
         List<EventDTO> eventDTOs = new ArrayList<>();
         for (int i = 0; i < events.size(); i++) {
             eventDTOs.add(eventMapper.toDTO(events.get(i)));
@@ -152,6 +154,7 @@ public class EventService {
         }
         return false;
     }
+
     public void apply(Integer id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();

@@ -1,5 +1,6 @@
 package com.example.EventHub.Event;
 
+import com.example.EventHub.EventPermission.EventPermission;
 import com.example.EventHub.EventStatus.EventStatus;
 import com.example.EventHub.EventType.EventType;
 import com.example.EventHub.Organisation.Organisation;
@@ -53,9 +54,11 @@ public class Event {
     name = "events_users",
     joinColumns = @JoinColumn(name = "event_id"),
     inverseJoinColumns = @JoinColumn(name = "user_id"))
-    List<User>users;
+    private List<User>users;
+    @Enumerated(EnumType.STRING)
+    private EventPermission eventPermission;
 
-    public Event(String name, String date, int duration, String description, String place, String time, double ticketPrice, int capacity, byte[] image, Organisation organisation, EventType eventType, EventStatus eventStatus, List<User> users) {
+    public Event(String name, String date, int duration, String description, String place, String time, double ticketPrice, int capacity, byte[] image, Organisation organisation, EventType eventType, EventStatus eventStatus, List<User> users, EventPermission eventPermission) {
         this.name = name;
         this.date = date;
         this.duration = duration;
@@ -69,6 +72,7 @@ public class Event {
         this.eventType = eventType;
         this.eventStatus = eventStatus;
         this.users = users;
+        this.eventPermission = eventPermission;
     }
 
     public String getBase64Image() {

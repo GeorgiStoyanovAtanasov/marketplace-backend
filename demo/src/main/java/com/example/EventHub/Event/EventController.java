@@ -1,6 +1,7 @@
 package com.example.EventHub.Event;
 
 
+import com.example.EventHub.EventPermission.EventPermission;
 import com.example.EventHub.EventStatus.EventStatus;
 import com.example.EventHub.EventType.EventType;
 import com.example.EventHub.EventType.EventTypeDTO;
@@ -60,7 +61,7 @@ public class EventController {
             return false;
         } else {
         byte[] decodedImage = Base64.getDecoder().decode(eventDTO.getImage());
-        Event event = new Event(eventDTO.getName(), eventDTO.getDate(), eventDTO.getDuration(), eventDTO.getDescription(), eventDTO.getPlace(), eventDTO.getTime(), eventDTO.getTicketPrice(), eventDTO.getCapacity(), decodedImage, organisationRepository.findByName(eventDTO.getOrganisation().getName()), eventTypeRepository.findByTypeName(eventDTO.getEventTypeDTO().getTypeName()), EventStatus.AVAILABLE, null);
+        Event event = new Event(eventDTO.getName(), eventDTO.getDate(), eventDTO.getDuration(), eventDTO.getDescription(), eventDTO.getPlace(), eventDTO.getTime(), eventDTO.getTicketPrice(), eventDTO.getCapacity(), decodedImage, organisationRepository.findByName(eventDTO.getOrganisation().getName()), eventTypeRepository.findByTypeName(eventDTO.getEventTypeDTO().getTypeName()), EventStatus.AVAILABLE, null, EventPermission.WAITING);
         //Event event = eventMapper.toEntity(eventDTO);
         eventRepository.save(event);
         return true;
@@ -68,8 +69,8 @@ public class EventController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Map<String, List<?>>> getAllEventsAndTypes() {
-        List<Event> allEvents = (List<Event>) eventRepository.findAll();
+    public ResponseEntity<Map<String, List<?>>> getAllEventsAndTypes(@RequestParam EventPermission eventPermission) {
+        List<Event> allEvents = eventRepository.findByEventPermission(eventPermission);
         List<EventType> allTypes = (List<EventType>) eventTypeRepository.findAll();
 
         List<EventDTO> eventDTOs = allEvents.stream()
@@ -107,8 +108,9 @@ public class EventController {
                                                              @RequestParam(name = "type", required = false) Integer type,
                                                              @RequestParam(name = "date", required = false) String date,
                                                              @RequestParam(name = "minPrice", required = false) Double minPrice,
-                                                             @RequestParam(name = "maxPrice", required = false) Double maxPrice) {
-        return eventService.searchEvents(name, place, type, date, minPrice, maxPrice);
+                                                             @RequestParam(name = "maxPrice", required = false) Double maxPrice,
+                                                             @RequestParam(name = "eventPermission", required = false) EventPermission eventPermission) {
+        return eventService.searchEvents(name, place, type, date, minPrice, maxPrice, eventPermission);
     }
 
     @GetMapping("/update")
@@ -130,5 +132,29 @@ public class EventController {
     public void apply(@RequestParam(name = "id") Integer id) {
         eventService.apply(id);
     }
+
+    @PostMapping("/accept")
+    public void acceptEvent(@RequestParam(name = "id") Integer id){
+        Optional<Event> optionalEvent = eventRepository.findById(id);
+        if(optionalEvent.isEmpty()){
+            throw new NoSuchElementException("Event is not found");
+        }else{
+            Event event = optionalEvent.get();
+            event.setEventPermission(EventPermission.ACCEPT);
+            eventRepository.save(event);
+        }
+    }
+    @PostMapping("/reject")
+    public void rejectEvent(@RequestParam(name = "id") Integer id){
+        Optional<Event> optionalEvent = eventRepository.findById(id);
+        if(optionalEvent.isEmpty()){
+            throw new NoSuchElementException("Event is not found");
+        }else{
+            Event event = optionalEvent.get();
+            event.setEventPermission(EventPermission.REJECT);
+            eventRepository.save(event);
+        }
+    }
+
 }
 
