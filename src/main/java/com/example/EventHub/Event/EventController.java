@@ -108,7 +108,8 @@ public class EventController {
                                                              @RequestParam(name = "date", required = false) String date,
                                                              @RequestParam(name = "minPrice", required = false) Double minPrice,
                                                              @RequestParam(name = "maxPrice", required = false) Double maxPrice) {
-        return eventService.searchEvents(name, place, type, date, minPrice, maxPrice);
+        Map<String, List<?>> response = eventService.searchEvents(name, place, type, date, minPrice, maxPrice);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/update")

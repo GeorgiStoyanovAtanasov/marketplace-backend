@@ -90,8 +90,10 @@ public class Event {
         }catch (ParseException ex){
             System.out.println("Parsing error!" + ex);
         }
-        if (users.size()>=capacity){
-            eventStatus=EventStatus.FULL;
+        if(users != null) {
+            if (users.size() >= capacity) {
+                eventStatus = EventStatus.FULL;
+            }
         }
         return this.eventStatus;
     }
